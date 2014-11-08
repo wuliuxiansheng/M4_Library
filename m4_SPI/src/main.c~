@@ -1,0 +1,75 @@
+#include "mGeneral.h"
+#include "mBus.h"
+#include "mUSB.h"
+#include "mZigbee.h"
+#include "SPI.h"
+#include "My_Usart.h"
+
+#include "stdio.h"
+
+
+//***********************  USART configuration   **************************//
+
+//**********************************************/
+
+void USART1_Send(char *str)
+{
+    while(*str)
+    {
+        USART_SendData(USART1,*str++);
+        
+        while(USART_GetFlagStatus(USART1,USART_FLAG_TXE)==RESET);
+        
+    }
+}
+
+void COM_Send(unsigned char (*img)[LINE_MAX])
+{
+    unsigned  short i,j;
+    
+    for(i = 0;i < ROW_MAX;i++)
+    {
+        for(j=0;j<LINE_MAX;j++)
+        {
+            
+            USART_SendData(USART1,img[i][j]);
+            while(USART_GetFlagStatus(USART1,USART_FLAG_TXE) == RESET);
+            
+        }
+    }
+    
+}
+
+
+
+
+int main( void )
+{
+    mInit();
+    USART_Config();
+    //mBusInit();
+    //mUSBInit();
+    SPI3_Init();
+    u16 data;
+    int i = 0;
+    int count = 1;
+
+    while(1)
+    {
+      while(count)
+	{
+	  mGreenON;
+	  int data_tx = 0xABCD;
+	  data = SPIx_ReadWriteByte(data_tx);
+	  i++;
+	  if(i > 50000)
+	    {
+	      i = 1;
+	      count = 0;
+	    }
+	}
+	  
+
+    }
+    
+}
